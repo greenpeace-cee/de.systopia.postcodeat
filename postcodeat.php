@@ -122,6 +122,38 @@ function postcodeat_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _postcodeat_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+function postcodeat_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  if ((strtolower($entity) == strtolower('postcode_a_t') || strtolower($entity) == strtolower('PostcodeAT')) && $action == 'get') {
+    $params['check_permissions'] = false; //allow everyone to use the postcode api
+  }
+}
+
+function postcodeat_civicrm_alterContent(  &$content, $context, $tplName, &$object ) {
+  if ($object instanceof CRM_Contact_Form_Inline_Address) {
+    $locBlockNo = CRM_Utils_Request::retrieve('locno', 'Positive', CRM_Core_DAO::$_nullObject, TRUE, NULL, $_REQUEST);
+    $template = CRM_Core_Smarty::singleton();
+    $template->assign('blockId', $locBlockNo);
+    CRM_Core_Resources::singleton()->addVars('postcodeat', array('blockId' => $locBlockNo));
+    $content .= $template->fetch('CRM/Contact/Form/Edit/Address/postcodeat_js.tpl');
+  }
+  if ($object instanceof CRM_Contact_Form_Contact) {
+    $template = CRM_Core_Smarty::singleton();
+    $content .= $template->fetch('CRM/Contact/Form/Edit/postcodeat_contact_js.tpl');
+  }
+}
+
+function postcodeat_civicrm_buildForm( $formName, &$form ) {
+  if ($formName == 'CRM_Contact_Form_Contact') {
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('de.systopia.postcodeat', 'js/postcodeat.js');
+  }
+}
+
+function postcodeat_civicrm_pageRun( &$page ) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    CRM_Core_Resources::singleton()->addScriptFile('de.systopia.postcodeat', 'js/postcodeat.js');
+  }
+}
 // --- Functions below this ship commented out. Uncomment as required. ---
 
 /**

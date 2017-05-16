@@ -14,7 +14,7 @@
 
 /**
  * PostcodeAT.Get API
- * 
+ *
  * Returns the found postcode, woonplaats, gemeente with the queried paramaters
  *
  * @param array $params
@@ -29,14 +29,16 @@ function civicrm_api3_postcode_a_t_get($params) {
     'plznr',
     'ortnam',
     'stroffi',
+    'return',
   );
   $returnFields = array(
     'id',
     'plznr',
     'ortnam',
     'stroffi',
+    'return',
   );
-  
+
   /* 
    * check if at least one parameter is valid 
    * Also break up an postcode into postcode number (4 digits) and postcode letter (2 letters).
@@ -48,7 +50,7 @@ function civicrm_api3_postcode_a_t_get($params) {
       if ($key == 'plznr') {
         // AT postcode is 4 digits only
         $postcode = preg_replace('/[^\d]/i', '', $value);
-        if (strlen($postcode) == 4) {
+        if (strlen($postcode) > 1) {
           $validatedParams['plznr'] = $postcode;
         }
       } elseif (!empty($value)) {
@@ -56,23 +58,31 @@ function civicrm_api3_postcode_a_t_get($params) {
       }
     }
   }
-  
-  $sql = "SELECT * FROM `civicrm_postcodeat` WHERE 1";
-  
+
   /**
-   * Build the where clausule of the postcode
+   * Build the where clause of the postcode
    */
+  $selectFields = '';
   $where = "";
   $values = array();
   $i = 1;
   foreach($validatedParams as $field => $value) {
-    $where .= " AND `".$field."` = %".$i;
-    $values[$i] = array($value, 'String');
+    if (!empty($selectFields)) { $selectFields .= ','; }
+    switch ($field) {
+      case 'plznr':
+      case 'ortnam':
+      case 'stroffi':
+        $where .= " AND `" . $field . "` LIKE %" . $i;
+        $values[$i] = array($value . '%', 'String');
+        break;
+    }
     $i++;
   }
-  $sql .= $where . " LIMIT 0, 25";
+
+  $selectFields = $validatedParams['return'];
+  $sql = "SELECT DISTINCT {$selectFields} FROM `civicrm_postcodeat` WHERE 1 {$where} LIMIT 0, 100";
   $dao = CRM_Core_DAO::executeQuery($sql, $values);
-  
+
   $returnValues = array();
   while($dao->fetch()) {
     $row = array();
@@ -81,14 +91,14 @@ function civicrm_api3_postcode_a_t_get($params) {
         $row[$field] = $dao->$field;
       }
     }
-    $returnValues[$dao->id] = $row;
+    $returnValues[] = $row;
   }
 
   CRM_Postcodeat_Utils_Hook::invoke(1,
-      $returnValues, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject,
-      'civicrm_postcodeat_get'
-      );
-  
+    $returnValues, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject,
+    'civicrm_postcodeat_get'
+  );
+
   return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'get');
 }
 
