@@ -55,6 +55,7 @@ class CRM_Postcodeat_ImportStatistikAustria {
   public function copy() {
     CRM_Core_DAO::executeQuery("TRUNCATE `civicrm_postcodeat`;");
     CRM_Core_DAO::executeQuery("INSERT INTO `civicrm_postcodeat` SELECT * FROM `civicrm_statistikaustria_import`");
+    CRM_Core_DAO::executeQuery("TRUNCATE `civicrm_statistikaustria_import`;");
   }
 
   /**
