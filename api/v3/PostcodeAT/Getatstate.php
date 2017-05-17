@@ -41,7 +41,7 @@ function _civicrm_api3_postcode_a_t_getatstate_spec(&$spec) {
 function civicrm_api3_postcode_a_t_getatstate($params) {
   // Validate parameters
   if (empty($params['plznr']) || strlen($params['plznr']) != 4) {
-    return civicrm_api3_create_error('Invalid plznr');
+    return civicrm_api3_create_error(ts('Invalid plznr'));
   }
   $plznr = $params['plznr'];
 
@@ -49,7 +49,7 @@ function civicrm_api3_postcode_a_t_getatstate($params) {
   $dao = CRM_Core_DAO::executeQuery($sql);
 
   if (!$dao->fetch()) {
-    return civicrm_api3_create_error("Plznr {$plznr} not found in database.");
+    return civicrm_api3_create_error(ts("Plznr {$plznr} not found."));
   }
 
   $gemnr = $dao->gemnr;

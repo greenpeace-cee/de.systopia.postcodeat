@@ -1,3 +1,4 @@
+{if $blockId}
 {literal}
 <script type="text/javascript">
 function init_postcodeat_contact_form() {
@@ -43,13 +44,16 @@ cj(function() {
               },
               success: function( data ) {
                 response( data );
-              },
-            width: 280,
-            selectFirst: true,
-            matchContains: true,
-            minLength: 2
+              }
         });
-      }
+      },
+        width: 280,
+        selectFirst: true,
+        matchContains: true,
+        minLength: 0
+    })
+    .focus(function() {
+      cj(this).autocomplete("search", "");
     });
 
     city_field.autocomplete({
@@ -66,12 +70,16 @@ cj(function() {
             },
             success: function( data ) {
               response( data );
-            },
-            width: 280,
-            selectFirst: true,
-            matchContains: true
+            }
         });
-      }
+      },
+        width: 280,
+        selectFirst: true,
+        matchContains: true,
+        minLength: 0
+    })
+    .focus(function() {
+      cj(this).autocomplete("search", "");
     });
 
     street_field.autocomplete({
@@ -88,15 +96,19 @@ cj(function() {
                 },
                 success: function( data ) {
                     response( data );
-                },
-                width: 280,
-                selectFirst: true,
-                matchContains: true
+                }
             });
-        }
+        },
+        width: 280,
+        selectFirst: true,
+        matchContains: true,
+        minLength: 0
+    })
+    .focus(function() {
+      cj(this).autocomplete("search", "");
     });
 });
 
-
 </script>
 {/literal}
+{/if}

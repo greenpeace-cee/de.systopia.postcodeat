@@ -34,7 +34,7 @@ function civicrm_api3_postcode_a_t_get($params) {
       if ($key == 'plznr') {
         // AT postcode is 4 digits only
         $postcode = preg_replace('/[^\d]/i', '', $value);
-        if (strlen($postcode) > 1) {
+        if (strlen($postcode) > 0) {
           $validatedParams['plznr'] = $postcode;
         }
       } elseif (!empty($value)) {
