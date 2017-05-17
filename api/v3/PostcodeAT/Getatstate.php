@@ -15,7 +15,7 @@ gemnr : id : state
 
 
 /**
- * PostcodeNL.Get API specification (optional)
+ * PostcodeAT.Getatstate API specification (optional)
  * This is used for documentation and validation.
  *
  * @param array $spec description of fields supported by this API call

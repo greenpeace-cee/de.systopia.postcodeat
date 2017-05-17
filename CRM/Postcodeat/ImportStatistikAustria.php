@@ -65,7 +65,7 @@ class CRM_Postcodeat_ImportStatistikAustria {
    * @return filepointer
    * @throws CRM_Core_Exception
    */
-  protected function getStreamToXML($convertToUtf8=true) {
+  protected function getStreamToXML() {
 
     $temp_file = tempnam(sys_get_temp_dir(), 'statistikaustria');
     $zipfile = $this->downloadUrl;
