@@ -1,18 +1,6 @@
 <?php
 
 /**
- * PostcodeNL.Get API specification (optional)
- * This is used for documentation and validation.
- *
- * @param array $spec description of fields supported by this API call
- * @return void
- * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
- */
-/*function _civicrm_api3_postcode_n_l_get_spec(&$spec) {
-  $spec['magicword']['api.required'] = 1;
-}*/
-
-/**
  * PostcodeAT.Get API
  *
  * Returns the found postcode, woonplaats, gemeente with the queried paramaters
@@ -39,11 +27,7 @@ function civicrm_api3_postcode_a_t_get($params) {
     'return',
   );
 
-  /* 
-   * check if at least one parameter is valid 
-   * Also break up an postcode into postcode number (4 digits) and postcode letter (2 letters).
-   *
-   */
+  // Validate parameters
   $validatedParams = array();
   foreach($params as $key => $value) {
     if (in_array($key, $validParamFields)) {
