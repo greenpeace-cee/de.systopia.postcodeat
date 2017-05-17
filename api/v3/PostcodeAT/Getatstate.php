@@ -1,18 +1,19 @@
 <?php
-/* TODO: Set state
-cj("#address_1_state_province_id").select2('data', { id:"1634", text: "Tirol"});
-gemnr : id : state
-1xxxx : 1628 : Burgenland
-2xxxx : 1629 : Kärnten
-3xxxx : 1630 : Niederösterreich
-4xxxx : 1631 : Oberösterreich
-5xxxx : 1632 : Salzburg
-6xxxx : 1633 : Steiermark
-7xxxx : 1634 : Tirol
-8xxxx : 1635 : Vorarlberg
-9xxxx : 1636 : Wien
-*/
-
+/*-------------------------------------------------------+
+| SYSTOPIA - Postcode Lookup for Austria                 |
+| Copyright (C) 2017 SYSTOPIA                            |
+| Author: M. Wire (mjw@mjwconsult.co.uk)                 |
+|         B. Endres (endres@systopia.de)                 |
+| http://www.systopia.de/                                |
++--------------------------------------------------------+
+| This program is released as free software under the    |
+| Affero GPL license. You can redistribute it and/or     |
+| modify it under the terms of this license which you    |
+| can read by viewing the included agpl.txt or online    |
+| at www.gnu.org/licenses/agpl.html. Removal of this     |
+| copyright header is strictly prohibited without        |
+| written permission from the original author(s).        |
++--------------------------------------------------------*/
 
 /**
  * PostcodeAT.Getatstate API specification (optional)

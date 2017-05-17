@@ -1,5 +1,10 @@
 Package: de.systopia.postcodeat
-Copyright (C) 2017, Matthew Wire <mjw@mjwconsult.co.uk>
+| SYSTOPIA - Postcode Lookup for Austria                 |
+| Copyright (C) 2017 SYSTOPIA                            |
+| Author: M. Wire (mjw@mjwconsult.co.uk)                 |
+|         B. Endres (endres@systopia.de)                 |
+| http://www.systopia.de/                                |
+
 Licensed under the GNU Affero Public License 3.0 (below).
 
 -------------------------------------------------------------------------------
