@@ -135,10 +135,12 @@ function postcodeat_civicrm_alterContent(  &$content, $context, $tplName, &$obje
     $template->assign('blockId', $locBlockNo);
     CRM_Core_Resources::singleton()->addVars('postcodeat', array('blockId' => $locBlockNo));
     $content .= $template->fetch('CRM/Contact/Form/Edit/Address/postcodeat_js.tpl');
+    $content .= $template->fetch('CRM/Postcodeat/autocomplete.tpl');
   }
   if ($object instanceof CRM_Contact_Form_Contact) {
     $template = CRM_Core_Smarty::singleton();
     $content .= $template->fetch('CRM/Contact/Form/Edit/postcodeat_contact_js.tpl');
+    $content .= $template->fetch('CRM/Postcodeat/autocomplete.tpl');
   }
 }
 
