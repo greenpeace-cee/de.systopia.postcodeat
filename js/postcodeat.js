@@ -47,8 +47,12 @@ function postcodeat_retrieve(blockId, postcode) {
 
 function postcodeat_init_addressBlock(blockId, address_table_id) {
     var postcode_field = cj('#address_'+blockId+'_postal_code');
-    var postalcode_td = cj('#address_'+blockId+'_postal_code').parent();
     var postcodesuffix = cj('#address_'+blockId+'_postal_code_suffix');
+    var city_td = cj('#address_'+blockId+'_city').parents('td:first');
+
+    // Add an Id to the postalcode td
+    cj('#address_'+blockId+'_postal_code').parents('td:first').attr('id','postcodeAddress_'+blockId);
+    var postalcode_td = cj('#postcodeAddress_'+blockId);
 
     postcode_field.change(function(e) {
         postcodeat_retrieve(blockId, postcode_field.val());
@@ -64,14 +68,14 @@ function postcodeat_init_addressBlock(blockId, address_table_id) {
 
     cj('#address_' + blockId + '_country_id').change(function(e) {
         if ((cj('#address_' + blockId + '_country_id').val()) == 1014) {
-            cj('#address_'+blockId+'_postal_code').parent().insertBefore('#streetAddress_'+blockId).wrap('<tr id="postcodeAddress_'+blockId+'"></tr>');
+            postalcode_td.insertBefore('#streetAddress_'+blockId).wrap('<tr id="postcodeAddress_'+blockId+'"></tr>');
             postcodesuffix.hide();
             cj('label[for=address_'+blockId+'_postal_code]').text("Postleitzahl"); // Postcode label
             cj('label[for=address_1_postal_code]').next().hide(); // Hide "Suffix" label
             postcodesuffix.next().hide(); // Hide "Suffix" help
 
         } else {
-            cj('#address_'+blockId+'_postal_code').parent().insertAfter('#address_'+blockId+'_city').unwrap('<tr id="postcodeAddress_'+blockId+'"></tr>');
+            postalcode_td.insertAfter(city_td);
             postcodesuffix.show();
             cj('label[for=address_'+blockId+'_postal_code]').text("Zip / Postal Code"); // Postcode label
             cj('label[for=address_1_postal_code]').next().show(); // Hide "Suffix" label
