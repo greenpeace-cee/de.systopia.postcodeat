@@ -50,7 +50,10 @@ function civicrm_api3_postcode_a_t_Importstatistikaustria($params) {
     $db->importStatistikAustria();
     // Overwrite live table
     $db->copy();
-    return civicrm_api3_create_success(1, $params, 'PostcodeAT', 'Importstatistikaustria');
+    // Count total number imported
+    $sql = "SELECT COUNT(*) FROM `civicrm_postcodeat`";
+    $values['count'] = CRM_Core_DAO::singleValueQuery($sql);
+    return civicrm_api3_create_success($values, $params, 'PostcodeAT', 'Importstatistikaustria');
   }
   catch (Exception $e) {
     throw new API_Exception(/*errorMessage*/ 'Import failed: ' . $e->getMessage(), /*errorCode*/ 1);
