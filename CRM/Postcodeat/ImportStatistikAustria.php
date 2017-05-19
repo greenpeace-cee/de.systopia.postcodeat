@@ -60,11 +60,38 @@ class CRM_Postcodeat_ImportStatistikAustria {
           $elements[$n] = CRM_Core_DAO::escapeString($val);
         }
 
+        // Process ortnam field
+        $elements[3] = CRM_Postcodeat_ImportStatistikAustria::parseOrtnam($elements[3]);
+
         $values = " ('" . $elements[0] . "', '" . $elements[1] . "', '" . $elements[2] . "', '" . $elements[3] . "', '" . $elements[4] .
           "', '" . $elements[5] . "', '" . $elements[6] . "', '" . $elements[7] . "')";
         CRM_Core_DAO::executeQuery($sql . $values);
       }
     }
+  }
+
+  /**
+   * Format Ortnam for display into database
+   * (Add space after "," and ":")
+   * @param $ortnam
+   */
+  function parseOrtnam($ortnam) {
+    $find = array(
+      ',',
+      ':'
+    );
+    $replace = array(
+      ', ',
+      ': '
+    );
+
+    $newOrtnam = str_replace($find, $replace, $ortnam);
+    if (strpos($ortnam, ','))
+    {
+      $fred=1;
+    }
+
+    return $newOrtnam;
   }
 
   public function copy() {
