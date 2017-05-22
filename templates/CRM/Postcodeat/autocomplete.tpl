@@ -55,6 +55,7 @@
                           url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
                           dataType: "json",
                           data: {
+                              mode: 0,
                               term : request.term,
                               plznr: cj('#address_'+blockId+'_postal_code').val(),
                               ortnam: cj('#address_'+blockId+'_city').val(),
@@ -81,6 +82,7 @@
                           url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
                           dataType: "json",
                           data: {
+                              mode: 0,
                               term : request.term,
                               plznr: cj('#address_'+blockId+'_postal_code').val(),
                               ortnam: cj('#address_'+blockId+'_city').val(),
@@ -107,6 +109,7 @@
                           url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
                           dataType: "json",
                           data: {
+                              mode: 0,
                               term : request.term,
                               plznr: cj('#address_'+blockId+'_postal_code').val(),
                               ortnam: cj('#address_'+blockId+'_city').val(),

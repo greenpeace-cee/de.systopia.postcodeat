@@ -24,7 +24,9 @@
  * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
  */
 function _civicrm_api3_postcode_a_t_getatstate_spec(&$spec) {
-  $spec['plznr']['api.required'] = 1;
+  $spec['plznr']['title'] = 'Post code';
+  $spec['ortnam']['title'] = 'City';
+  $spec['stroffi']['title'] = 'Street';
 }
 
 /**
@@ -40,62 +42,81 @@ function _civicrm_api3_postcode_a_t_getatstate_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_postcode_a_t_getatstate($params) {
-  // Validate parameters
-  if (empty($params['plznr']) || strlen($params['plznr']) != 4) {
-    return civicrm_api3_create_error(ts('Invalid plznr'));
-  }
   $plznr = $params['plznr'];
+  $ortnam = $params['ortnam'];
+  $stroffi = $params['stroffi'];
 
-  $sql = "SELECT DISTINCT gemnr FROM `civicrm_postcodeat` WHERE plznr = {$plznr} LIMIT 0, 1";
+  $where = array();
+  if (!empty($plznr)) {
+    $where[] = "plznr LIKE '{$plznr}%'";
+  }
+  if (!empty($ortnam)) {
+    $where[] = "ortnam LIKE '{$ortnam}%'";
+  }
+  if (!empty($stroffi)) {
+    $where[] = "stroffi LIKE '{$stroffi}%'";
+  }
+  if (count($where) > 1) {
+    $where = implode(' AND ', $where);
+  }
+  else {
+    $where = reset($where);
+  }
+
+  // Validate parameters
+  if (empty($where)) {
+    return civicrm_api3_create_error(ts('Invalid parameters for function Postcodeat.getatstate'));
+  }
+
+  $sql = "SELECT DISTINCT gemnr FROM `civicrm_postcodeat` WHERE {$where} LIMIT 0,10";
   $dao = CRM_Core_DAO::executeQuery($sql);
 
   if (!$dao->fetch()) {
-    return civicrm_api3_create_error(ts("Plznr {$plznr} not found."));
+    return civicrm_api3_create_error(ts("State not found."));
   }
 
   $gemnr = $dao->gemnr;
   switch($gemnr[0]) {
     case 1:
       $values['id'] = 1628;
-      $values['state'] = "Burgenland";
+      //$values['state'] = "Burgenland";
       break;
     case 2:
       $values['id'] = 1629;
-      $values['state'] = "Kärnten";
+      //$values['state'] = "Kärnten";
       break;
     case 3:
       $values['id'] = 1630;
-      $values['state'] = "Niederösterreich";
+      //$values['state'] = "Niederösterreich";
       break;
     case 4:
       $values['id'] = 1631;
-      $values['state'] = "Oberösterreich";
+      //$values['state'] = "Oberösterreich";
       break;
     case 5:
       $values['id'] = 1632;
-      $values['state'] = "Salzburg";
+      //$values['state'] = "Salzburg";
       break;
     case 6:
       $values['id'] = 1633;
-      $values['state'] = "Steiermark";
+      //$values['state'] = "Steiermark";
       break;
     case 7:
       $values['id'] = 1634;
-      $values['state'] = "Tirol";
+      //$values['state'] = "Tirol";
       break;
     case 8:
       $values['id'] = 1635;
-      $values['state'] = "Vorarlberg";
+      //$values['state'] = "Vorarlberg";
       break;
     case 9:
       $values['id'] = 1636;
-      $values['state'] = "Wien";
+      //$values['state'] = "Wien";
       break;
   }
 
-  /* TODO: Set state
-cj("#address_1_state_province_id").select2('data', { id:"1634", text: "Tirol"});
-*/
+  // Get state/province label
+  $values['state'] = CRM_Core_PseudoConstant::stateProvince($values['id'], FALSE);
 
   $returnValues = array($values);
   return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'getstate');

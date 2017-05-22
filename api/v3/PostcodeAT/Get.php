@@ -58,9 +58,7 @@ function civicrm_api3_postcode_a_t_get($params) {
     }
   }
 
-  /**
-   * Build the where clause of the postcode
-   */
+  // Build the where clause of the postcode
   $selectFields = '';
   $where = "";
   $values = array();
@@ -85,12 +83,24 @@ function civicrm_api3_postcode_a_t_get($params) {
   $returnValues = array();
   while($dao->fetch()) {
     $row = array();
-    foreach($returnFields as $field) {
-      if (isset($dao->$field)) {
-        $row[$field] = $dao->$field;
+    if ($params['mode'] == 0) {
+      // Order as array 0 => plznr, ortnam, stroffi etc.
+      foreach ($returnFields as $field) {
+        if (isset($dao->$field)) {
+          $row[$field] = $dao->$field;
+        }
+      }
+      $returnValues[] = $row;
+    }
+    else {
+      // Order as array plznr => 1020,1030; ortnam => Wien, Salzburg..; stroffi => ...,...
+      foreach ($returnFields as $field) {
+        if (isset($dao->$field)) {
+          $returnValues[$field][$dao->$field]=$dao->$field;
+        }
       }
     }
-    $returnValues[] = $row;
+
   }
 
   CRM_Postcodeat_Utils_Hook::invoke(1,

@@ -17,19 +17,22 @@
 /*
  * Function to retrieve the postcode and fill the fields
  */
-function postcodeat_retrieve(blockId, postcode) {
-
+function postcodeat_setstateprovince(blockId, postcode) {
     //check if country is AT.
     if ((cj('#address_' + blockId + '_country_id').val()) != 1014) {
         return;
     }
 
     //run only when a postcode is present
-    if (postcode.length != 4) {
-        return;
-    }
+    //if (postcode.length != 4) {
+//        return;
+//    }
 
-    CRM.api3('PostcodeAT', 'getatstate', {'sequential': 1, 'plznr': postcode},
+    var postcode_field = cj('#address_'+blockId+'_postal_code');
+    var city_field = cj('#address_'+blockId+'_city');
+    var street_field = cj('#address_'+blockId+'_street_address');
+
+    CRM.api3('PostcodeAT', 'getatstate', {'sequential': 1, 'plznr': postcode_field.val(), 'ortnam': city_field.val(), 'stroffi': street_field.val()},
         {success: function(data) {
             if (data.is_error == 0 && data.count == 1) {
                 var obj = data.values[0];
@@ -45,8 +48,37 @@ function postcodeat_retrieve(blockId, postcode) {
     });
 }
 
+function postcodeat_autofill(blockId, currentField) {
+    var postcode_field = cj('#address_'+blockId+'_postal_code');
+    var city_field = cj('#address_'+blockId+'_city');
+    var street_field = cj('#address_'+blockId+'_street_address');
+
+    cj.ajax( {
+        url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
+        dataType: "json",
+        data: {
+            mode: 1,
+            plznr: postcode_field.val(),
+            ortnam: city_field.val(),
+            stroffi: street_field.val(),
+        },
+        success: function( data ) {
+            var plznr = data[0].plznr;
+            var ortnam = data[0].ortnam;
+            var stroffi = data[0].stroffi;
+
+            if (currentField != 0) postcode_field.val(plznr);
+            if (currentField != 1) city_field.val(ortnam);
+            if (currentField != 2) street_field.val(stroffi);
+        }
+    });
+}
+
 function postcodeat_init_addressBlock(blockId, address_table_id) {
     var postcode_field = cj('#address_'+blockId+'_postal_code');
+    var city_field = cj('#address_'+blockId+'_city');
+    var street_field = cj('#address_'+blockId+'_street_address');
+
     var postcodesuffix = cj('#address_'+blockId+'_postal_code_suffix');
     var city_td = cj('#address_'+blockId+'_city').parents('td:first');
 
@@ -54,16 +86,19 @@ function postcodeat_init_addressBlock(blockId, address_table_id) {
     cj('#address_'+blockId+'_postal_code').parents('td:first').attr('id','postcodeAddress_'+blockId);
     var postalcode_td = cj('#postcodeAddress_'+blockId);
 
-    postcode_field.change(function(e) {
-        postcodeat_retrieve(blockId, postcode_field.val());
+    postcode_field.focusout(function(e) {
+        postcodeat_autofill(blockId, 0);
+        postcodeat_setstateprovince(blockId, postcode_field.val());
     });
 
-    postcode_field.keyup(function(e) {
-        postcodeat_retrieve(blockId, postcode_field.val());
+    city_field.focusout(function(e) {
+        postcodeat_autofill(blockId, 1);
+        postcodeat_setstateprovince(blockId, postcode_field.val());
     });
 
-    postcode_field.click(function(e) {
-        postcodeat_retrieve(blockId, postcode_field.val());
+    street_field.focusout(function(e) {
+        postcodeat_autofill(blockId, 2);
+        postcodeat_setstateprovince(blockId, postcode_field.val());
     });
 
     cj('#address_' + blockId + '_country_id').change(function(e) {

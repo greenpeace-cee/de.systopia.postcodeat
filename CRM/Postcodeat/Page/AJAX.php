@@ -23,24 +23,33 @@
 class CRM_Postcodeat_Page_AJAX {
   
   function autocomplete() {
-    $available_fields = array(
-      'plznr' => 'plznr',
-      'ortnam' => 'ortnam',
-      'stroffi' => 'stroffi',
-    );
+    $mode = CRM_Utils_Request::retrieve('mode', 'Integer', CRM_Core_DAO::$_nullObject, FALSE, 0);
     $plznr = CRM_Utils_Request::retrieve('plznr', 'String', CRM_Core_DAO::$_nullObject, FALSE, '');
     $ortnam = CRM_Utils_Request::retrieve('ortnam', 'String', CRM_Core_DAO::$_nullObject, FALSE, '');
     $stroffi = CRM_Utils_Request::retrieve('stroffi', 'String', CRM_Core_DAO::$_nullObject, FALSE, '');
     $return = CRM_Utils_Request::retrieve('return', 'String', CRM_Core_DAO::$_nullObject, FALSE, 'ortnam');
 
+    $params = array(
+      'sequential' => 0,
+      'plznr' => $plznr,
+      'ortnam' => $ortnam,
+      'stroffi' => $stroffi,
+      'mode' => $mode,
+    );
+    if ($mode == 0) {
+      $params['return'] = $return;
+    }
+    elseif ($mode == 1) {
+      $params['return'] = 'plznr,ortnam,stroffi';
+      // Don't try and search if we have no address details
+      if (empty($plznr) && empty($ortnam) && empty($stroffi)) {
+        CRM_Utils_System::civiExit();
+        return;
+      }
+    }
+
     try {
-      $result = civicrm_api3('PostcodeAT', 'get', array(
-        'sequential' => 1,
-        'plznr' => $plznr,
-        'ortnam' => $ortnam,
-        'stroffi' => $stroffi,
-        'return' => $return,
-      ));
+      $result = civicrm_api3('PostcodeAT', 'get', $params);
     }
     catch (Exception $e) {
       CRM_Utils_System::civiExit();
@@ -48,15 +57,32 @@ class CRM_Postcodeat_Page_AJAX {
     }
 
     if (empty($result['is_error'])) {
-      foreach($result['values'] as $value) {
-        foreach ($value as $key => $entry) {
-          $autocomplete[] = array('value' => $entry);
+      if ($mode == 0) {
+        foreach ($result['values'] as $value) {
+          foreach ($value as $key => $entry) {
+            $autocomplete[] = array('value' => $entry);
+          }
         }
+      }
+      else {
+        if (count($result['values']['plznr']) == 1) {
+          $plznr = reset($result['values']['plznr']);
+        }
+        if (count($result['values']['ortnam']) == 1) {
+          $ortnam = reset($result['values']['ortnam']);
+        }
+        if (count($result['values']['stroffi']) == 1) {
+          $stroffi = reset($result['values']['stroffi']);
+        }
+        $autocomplete[] = array(
+          'plznr' => $plznr,
+          'ortnam' => $ortnam,
+          'stroffi' => $stroffi,
+        );
       }
       echo json_encode($autocomplete);
     }
     CRM_Utils_System::civiExit();
   }
-  
 }
 
