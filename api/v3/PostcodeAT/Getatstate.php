@@ -65,7 +65,7 @@ function civicrm_api3_postcode_a_t_getatstate($params) {
 
   // Validate parameters
   if (empty($where)) {
-    return civicrm_api3_create_error(ts('Invalid parameters for function Postcodeat.getatstate'));
+    return civicrm_api3_create_success(array(), $params, 'PostcodeAT', 'getstate');
   }
 
   $sql = "SELECT DISTINCT gemnr FROM `civicrm_postcodeat` WHERE {$where} LIMIT 0,10";
@@ -119,6 +119,6 @@ function civicrm_api3_postcode_a_t_getatstate($params) {
   $values['state'] = CRM_Core_PseudoConstant::stateProvince($values['id'], FALSE);
 
   $returnValues = array($values);
-  return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'getstate');
+  return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'getatstate');
 }
 
