@@ -2,7 +2,8 @@
 <extension key="de.systopia.postcodeat" type="module">
   <file>postcodeat</file>
   <name>Austrian Postcode</name>
-  <description>Use the postcode data available at http://www.statistik.at/strasse/suchmaske.jsp to validate addresses</description>
+  <description>Use the postcode data available at http://www.statistik.at/strasse/suchmaske.jsp to validate addresses (Postcode, City, Street Address and State).
+  This extension was based on https://github.com/CiviCooP/org.civicoop.postcodenl</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Matthew Wire</author>
@@ -12,8 +13,8 @@
     <url desc="Main Extension Page">https://github.com/mattwire/de.systopia.postcodeat</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2017-05-17</releaseDate>
-  <version>0.1</version>
+  <releaseDate>2017-05-23</releaseDate>
+  <version>0.2</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.6</ver>
