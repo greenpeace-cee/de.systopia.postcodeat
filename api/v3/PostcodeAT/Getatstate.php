@@ -72,7 +72,7 @@ function civicrm_api3_postcode_a_t_getatstate($params) {
   $dao = CRM_Core_DAO::executeQuery($sql);
 
   if (!$dao->fetch()) {
-    return civicrm_api3_create_error(ts("State not found."));
+    return civicrm_api3_create_success(array(), $params, 'PostcodeAT', 'getstate');
   }
 
   $gemnr = $dao->gemnr;
