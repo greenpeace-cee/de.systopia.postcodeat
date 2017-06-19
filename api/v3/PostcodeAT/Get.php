@@ -78,6 +78,10 @@ function civicrm_api3_postcode_a_t_get($params) {
 
   $selectFields = $validatedParams['return'];
   $sql = "SELECT DISTINCT {$selectFields} FROM `civicrm_postcodeat` WHERE 1 {$where} LIMIT 0, 100";
+  // For ortnam (City) we select gemnam38 (Politische Gemeinde) as well
+  if ($selectFields == 'ortnam') {
+    $sql.= " UNION SELECT gemnam38 FROM `civicrm_postcodeat` WHERE 1 {$where} LIMIT 0, 100";
+  }
   $dao = CRM_Core_DAO::executeQuery($sql, $values);
 
   $returnValues = array();
