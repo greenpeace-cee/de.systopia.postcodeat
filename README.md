@@ -10,6 +10,7 @@ Uses the XML zip file from Statistik Austria (http://www.statistik.at/verzeichni
 PostcodeAT.Importstatistikaustria - supports auto-download from statistik austria and manual install with parameter "zipfile".
 PostcodeAT.Get - main lookup function used by AJAX autocomplete.
 PostcodeAT.Getatstate - lookup function for Austrian State from Postcode.
+PostcodeAT.Getstate - lookup function for State from Postcode (requires postal_code and country_id)
 
 ## Installation / Usage
 **This extension will not look up any addresses until you execute the API function PostcodeAT.Importstatistikaustria and it has completed successfully.**

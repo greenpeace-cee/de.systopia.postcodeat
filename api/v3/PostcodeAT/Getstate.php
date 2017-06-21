@@ -16,23 +16,28 @@
 +--------------------------------------------------------*/
 
 /**
- * PostcodeAT.Getatstate API specification (optional)
+ * PostcodeAT.Getstate API specification (optional)
  * This is used for documentation and validation.
  *
  * @param array $spec description of fields supported by this API call
  * @return void
  * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
  */
-function _civicrm_api3_postcode_a_t_getatstate_spec(&$spec) {
-  $spec['plznr']['title'] = 'Post code';
-  $spec['ortnam']['title'] = 'City';
-  $spec['stroffi']['title'] = 'Street';
+function _civicrm_api3_postcode_a_t_getstate_spec(&$spec) {
+  $spec['postal_code'] = [
+    'title' => 'Postal code',
+    'api.required' => 1,
+    ];
+  $spec['country_id'] = [
+    'title' => 'Country ID',
+    'api.required' => 1,
+    ];
 }
 
 /**
  * PostcodeAT.Getstate API
  *
- * Returns the state based on the postcode.
+ * Returns the state based on the postcode and country.
  * (Looks up gemnr from postcode and maps to state)
  *
  * @param array $params
@@ -41,15 +46,19 @@ function _civicrm_api3_postcode_a_t_getatstate_spec(&$spec) {
  * @see civicrm_api3_create_error
  * @throws API_Exception
  */
-function civicrm_api3_postcode_a_t_getatstate($params) {
-  // Used for UI lookups of state
-  $values = CRM_Postcodeat_Country_AT::getState($params);
-  if ($values) {
-    $returnValues[$values['id']] = array($values);
-    return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'getstate');
-  }
-  // If not found return generic success (we are using this for auto-lookup in the UI and don't want api errors to be reported
-  return civicrm_api3_create_success(NULL);
+function civicrm_api3_postcode_a_t_getstate($params) {
 
+  switch ($params['country_id']) {
+    case 1014: // Österreich
+      $params['plznr'] = $params['postal_code'];
+      $values = CRM_Postcodeat_Country_AT::getState($params);
+      if ($values) {
+        $returnValues[$values['id']] = array($values);
+        return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'getstate');
+      }
+      break;
+  }
+
+  return civicrm_api3_create_error('State not found');
 }
 
