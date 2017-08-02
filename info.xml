@@ -13,8 +13,8 @@
     <url desc="Main Extension Page">https://github.com/systopia/de.systopia.postcodeat</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2017-07-25</releaseDate>
-  <version>1.0.beta2</version>
+  <releaseDate>2017-08-02</releaseDate>
+  <version>1.0.beta3</version>
   <develStage>beta</develStage>
   <compatibility>
     <ver>4.6</ver>

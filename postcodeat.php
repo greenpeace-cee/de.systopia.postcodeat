@@ -138,8 +138,14 @@ function postcodeat_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 }
 
 function postcodeat_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  if ((strtolower($entity) == strtolower('postcode_a_t') || strtolower($entity) == strtolower('PostcodeAT')) && $action == 'get') {
-    $params['check_permissions'] = false; //allow everyone to use the postcode api
+  if (strtolower($entity) == strtolower('postcode_a_t') || strtolower($entity) == strtolower('PostcodeAT')) {
+    switch ($action) {
+      case 'get':
+      case 'getatstate':
+      case 'getstate':
+        $params['check_permissions'] = FALSE; //allow everyone to use the postcode api
+        break;
+    }
   }
 }
 
