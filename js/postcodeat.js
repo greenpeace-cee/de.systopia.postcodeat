@@ -32,7 +32,7 @@ function postcodeat_setstateprovince(blockId, postcode) {
     var city_field = cj('#address_'+blockId+'_city');
     var street_field = cj('#address_'+blockId+'_street_address');
 
-    CRM.api3('PostcodeAT', 'getatstate', {'plznr': postcode_field.val(), 'ortnam': city_field.val(), 'stroffi': street_field.val()},
+    CRM.api3('PostcodeAT', 'getatstate', {'plznr': postcode_field.val(), 'ortnam': city_field.val()},
         {success: function(data) {
             if (data.is_error == 0 && data.count == 1) {
                 var id = data.id;

@@ -9,7 +9,10 @@ class CRM_Postcodeat_Country_AT {
 
     $where = array();
     if (!empty($plznr)) {
-      $where[] = "plznr LIKE '{$plznr}%'";
+      // only take the first 3 signs of the PLZ, since in some Cities there are
+      // private PLZs, indicated by an alternating last digit
+      $sub_plz = substr($plznr, 0, 3);
+      $where[] = "plznr LIKE '{$sub_plz}_'";
     }
     if (!empty($ortnam)) {
       $where[] = "ortnam LIKE '{$ortnam}%'";
@@ -33,8 +36,7 @@ class CRM_Postcodeat_Country_AT {
     if (empty($where)) {
       return FALSE;
     }
-
-    $sql = "SELECT DISTINCT gemnr FROM `civicrm_postcodeat` WHERE {$where} LIMIT 0,10";
+    $sql = "SELECT DISTINCT LEFT(gemnr,1) AS gemnr,plznr,ortnam FROM `civicrm_postcodeat` c WHERE {$where} LIMIT 0,10";
     $dao = CRM_Core_DAO::executeQuery($sql);
 
     if (!$dao->fetch()) {
@@ -42,7 +44,7 @@ class CRM_Postcodeat_Country_AT {
     }
 
     $gemnr = $dao->gemnr;
-    switch($gemnr[0]) {
+    switch($gemnr) {
       case 1:
         $values['id'] = 1628;
         //$values['state'] = "Burgenland";
