@@ -50,6 +50,7 @@ function civicrm_api3_postcode_a_t_getstate($params) {
 
   switch ($params['country_id']) {
     case 1014: // Österreich
+    case 'AT':
       $params['plznr'] = $params['postal_code'];
       $values = CRM_Postcodeat_Country_AT::getState($params);
       if ($values) {
