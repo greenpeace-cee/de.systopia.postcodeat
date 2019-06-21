@@ -30,6 +30,7 @@ function civicrm_api3_postcode_a_t_get($params) {
   $validParamFields = array(
     'id',
     'plznr',
+    'gemnam38',
     'ortnam',
     'stroffi',
     'return',
@@ -69,6 +70,7 @@ function civicrm_api3_postcode_a_t_get($params) {
       case 'plznr':
       case 'ortnam':
       case 'stroffi':
+      case 'gemnam38':
         $where .= " AND `" . $field . "` LIKE %" . $i;
         $values[$i] = array($value . '%', 'String');
         break;
