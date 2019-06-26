@@ -71,8 +71,15 @@ function civicrm_api3_postcode_a_t_get($params) {
       case 'ortnam':
       case 'stroffi':
       case 'gemnam38':
-        $where .= " AND `" . $field . "` LIKE %" . $i;
-        $values[$i] = array($value . '%', 'String');
+        if (!empty($params['strict_fields_searching'])
+          && is_array($params['strict_fields_searching'])
+          && in_array($field, $params['strict_fields_searching'])) {
+          $where .= " AND `" . $field . "` = %" . $i;
+          $values[$i] = array($value, 'String');
+        } else {
+          $where .= " AND `" . $field . "` LIKE %" . $i;
+          $values[$i] = array($value . '%', 'String');
+        }
         break;
     }
     $i++;
@@ -118,3 +125,48 @@ function civicrm_api3_postcode_a_t_get($params) {
   return civicrm_api3_create_success($returnValues, $params, 'PostcodeAT', 'get');
 }
 
+/**
+ * Adjust Metadata for Payment action
+ *
+ * The metadata is used for setting defaults, documentation & validation
+ * @param array $params array or parameters determined by getfields
+ */
+function _civicrm_api3_postcode_a_t_get_spec(&$params) {
+  $params['id'] = [
+    'name'         => 'id',
+    'api.required' => 0,
+    'title'        => 'ID of the row',
+  ];
+  $params['plznr'] = [
+    'name'         => 'plznr',
+    'api.required' => 0,
+    'title'        => 'Postal code(plznr)',
+  ];
+  $params['gemnam38'] = [
+    'name'         => 'gemnam38',
+    'api.required' => 0,
+    'title'        => 'gemnam38',
+  ];
+  $params['ortnam'] = [
+    'name'         => 'ortnam',
+    'api.required' => 0,
+    'title'        => 'City(ortnam)',
+  ];
+  $params['stroffi'] = [
+    'name'         => 'stroffi',
+    'api.required' => 0,
+    'title'        => 'Street address(stroffi)',
+  ];
+  $params['return'] = [
+    'name'         => 'return',
+    'api.required' => 0,
+    'title'        => 'Return field',
+    'description'  => 'Available one of the fields: "id", "plznr", "gemnam38", "ortnam", "stroffi", "return"',
+  ];
+  $params['strict_fields_searching'] = [
+    'name'         => 'strict_fields_searching',
+    'api.required' => 0,
+    'title'        => "Strict filed searching",
+    'description'  => "Use '=' operator instead of 'LIKE' for fields. Ex: «['plznr', 'ortnam']»"
+  ];
+}
