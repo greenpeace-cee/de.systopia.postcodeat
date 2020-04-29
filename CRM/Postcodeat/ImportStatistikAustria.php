@@ -17,7 +17,7 @@
 
 /*
  * Importer class to import the Statistik Austria data
- * 
+ *
  */
 
 class CRM_Postcodeat_ImportStatistikAustria {
@@ -25,7 +25,7 @@ class CRM_Postcodeat_ImportStatistikAustria {
   private $downloadUrl;
   private $xmlFile;
 
-  public function __construct($downloadUrl = "http://www.statistik.at/verzeichnis/strassenliste/gemplzstr.zip", $xmlFile = 'gemplzstr.xml') {
+  public function __construct($downloadUrl = "https://statistik.at/verzeichnis/strassenliste/gemplzstr.zip", $xmlFile = 'gemplzstr.xml') {
     $this->downloadUrl = $downloadUrl;
     $this->xmlFile = $xmlFile;
   }
