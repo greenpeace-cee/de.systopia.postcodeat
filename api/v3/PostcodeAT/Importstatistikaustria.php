@@ -25,6 +25,12 @@
  */
 function _civicrm_api3_postcode_a_t_Importstatistikaustria_spec(&$spec) {
   $spec['zipfile']['title'] = "Path to zip file if available locally";
+  $spec['error_on_empty'] = [
+    'title'       => 'Error on empty import result?',
+    'description' => 'Indicates whether an empty new data set should raise an error and not overwrite the table data.',
+    'type'        => CRM_Utils_Type::T_BOOLEAN,
+    'api.default' => TRUE,
+  ];
 }
 
 /**
@@ -49,7 +55,9 @@ function civicrm_api3_postcode_a_t_Importstatistikaustria($params) {
     // Put data in temporary table
     $db->importStatistikAustria();
     // Overwrite live table
-    $db->copy();
+    if (!$db->copy($params['error_on_empty'])) {
+      return civicrm_api3_create_error('Received empty data set. Discarding results.', ['error_code' => 'empty_data_set']);
+    }
     // Count total number imported
     $sql = "SELECT COUNT(*) FROM `civicrm_postcodeat`";
     $values['count'] = CRM_Core_DAO::singleValueQuery($sql);
