@@ -22,4 +22,25 @@ class CRM_Postcodeat_Upgrader extends CRM_Postcodeat_Upgrader_Base {
    $this->executeSqlFile('sql/uninstall.sql');
   }
 
+  /**
+   * Add column zustort to civicrm_postcodeat and civicrm_statistikaustria_import
+   */
+  public function upgrade_1301() {
+    $column_exists = CRM_Core_DAO::singleValueQuery("SHOW COLUMNS FROM `civicrm_postcodeat` LIKE 'zustort';");
+    if (!$column_exists) {
+      $this->ctx->log->info("Adding column `zustort` varchar(75) NULL to table `civicrm_postcodeat`");
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_postcodeat` ADD `zustort` varchar(75) NULL");
+    }
+
+    $column_exists = CRM_Core_DAO::singleValueQuery("SHOW COLUMNS FROM `civicrm_statistikaustria_import` LIKE 'zustort';");
+    if (!$column_exists) {
+      $this->ctx->log->info("Adding column `zustort` varchar(75) NULL to table `civicrm_statistikaustria_import`");
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_statistikaustria_import` ADD `zustort` varchar(75) NULL");
+    }
+
+    $logging = new CRM_Logging_Schema();
+    $logging->fixSchemaDifferences();
+    return TRUE;
+  }
+
 }

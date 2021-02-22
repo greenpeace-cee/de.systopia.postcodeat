@@ -33,6 +33,7 @@ function civicrm_api3_postcode_a_t_get($params) {
     'gemnam38',
     'ortnam',
     'stroffi',
+    'zustort',
     'return',
   );
   $returnFields = array(
@@ -40,6 +41,7 @@ function civicrm_api3_postcode_a_t_get($params) {
     'plznr',
     'ortnam',
     'stroffi',
+    'zustort',
     'return',
   );
 
@@ -71,6 +73,7 @@ function civicrm_api3_postcode_a_t_get($params) {
       case 'ortnam':
       case 'stroffi':
       case 'gemnam38':
+      case 'zustort':
         if (!empty($params['strict_fields_searching'])
           && is_array($params['strict_fields_searching'])
           && in_array($field, $params['strict_fields_searching'])) {
@@ -157,11 +160,16 @@ function _civicrm_api3_postcode_a_t_get_spec(&$params) {
     'api.required' => 0,
     'title'        => 'Street address(stroffi)',
   ];
+  $params['zustort'] = [
+    'name'         => 'zustort',
+    'api.required' => 0,
+    'title'        => 'zustort',
+  ];
   $params['return'] = [
     'name'         => 'return',
     'api.required' => 0,
     'title'        => 'Return field',
-    'description'  => 'Available one of the fields: "id", "plznr", "gemnam38", "ortnam", "stroffi", "return"',
+    'description'  => 'Available one of the fields: "id", "plznr", "gemnam38", "ortnam", "stroffi", "zustort", "return"',
   ];
   $params['strict_fields_searching'] = [
     'name'         => 'strict_fields_searching',
