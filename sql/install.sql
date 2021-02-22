@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_postcodeat` (
   `stroffi` varchar(60) NOT NULL,
   `plznr` char(4) NOT NULL,
   `gemnr2` char(5) NOT NULL,
+  `zustort` varchar(75) NULL,
   PRIMARY KEY (`id`),
   KEY (`plznr`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_statistikaustria_import` (
   `stroffi` varchar(60) NOT NULL,
   `plznr` char(4) NOT NULL,
   `gemnr2` char(5) NOT NULL,
+  `zustort` varchar(75) NULL,
   PRIMARY KEY (`id`),
   KEY (`plznr`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
