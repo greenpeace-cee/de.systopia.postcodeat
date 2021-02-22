@@ -94,10 +94,15 @@ class CRM_Postcodeat_ImportStatistikAustria {
     return $newOrtnam;
   }
 
-  public function copy() {
+  public function copy($discardEmpty = TRUE) {
+    $check_sql = "SELECT COUNT(*) FROM `civicrm_statistikaustria_import`";
+    if ($discardEmpty && CRM_Core_DAO::singleValueQuery($check_sql) == 0) {
+      return FALSE;
+    }
     CRM_Core_DAO::executeQuery("TRUNCATE `civicrm_postcodeat`;");
     CRM_Core_DAO::executeQuery("INSERT INTO `civicrm_postcodeat` SELECT * FROM `civicrm_statistikaustria_import`");
     CRM_Core_DAO::executeQuery("TRUNCATE `civicrm_statistikaustria_import`;");
+    return TRUE;
   }
 
   /**
