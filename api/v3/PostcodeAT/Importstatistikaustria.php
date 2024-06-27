@@ -24,12 +24,15 @@
  * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
  */
 function _civicrm_api3_postcode_a_t_Importstatistikaustria_spec(&$spec) {
-  $spec['zipfile']['title'] = "Path to zip file if available locally";
   $spec['error_on_empty'] = [
     'title'       => 'Error on empty import result?',
     'description' => 'Indicates whether an empty new data set should raise an error and not overwrite the table data.',
     'type'        => CRM_Utils_Type::T_BOOLEAN,
     'api.default' => TRUE,
+  ];
+  $spec['zipfile'] = [
+    'title' => "Path to zip file if available locally",
+    'type'  => CRM_Utils_Type::T_STRING,
   ];
 }
 
@@ -44,26 +47,26 @@ function _civicrm_api3_postcode_a_t_Importstatistikaustria_spec(&$spec) {
  */
 function civicrm_api3_postcode_a_t_Importstatistikaustria($params) {
   try {
-    set_time_limit(-1);
-    if (!empty($params['zipfile'])) {
-      $db = new CRM_Postcodeat_ImportStatistikAustria($params['zipfile']);
-    }
-    else {
-      $db = new CRM_Postcodeat_ImportStatistikAustria();
-    }
+    set_time_limit(0);
 
     // Put data in temporary table
-    $db->importStatistikAustria();
+    CRM_Postcodeat_BAO_PostcodeAT::importStatistikAustria($params['zipfile'] ?? NULL);
+
     // Overwrite live table
-    if (!$db->copy($params['error_on_empty'])) {
-      return civicrm_api3_create_error('Received empty data set. Discarding results.', ['error_code' => 'empty_data_set']);
+    if (!CRM_Postcodeat_BAO_PostcodeAT::copy($params['error_on_empty'])) {
+      return civicrm_api3_create_error(
+        'Received empty data set. Discarding results.',
+        [ 'error_code' => 'empty_data_set' ]
+      );
     }
+
     // Count total number imported
-    $sql = "SELECT COUNT(*) FROM `civicrm_postcodeat`";
-    $values['count'] = CRM_Core_DAO::singleValueQuery($sql);
-    return civicrm_api3_create_success($values, $params, 'PostcodeAT', 'Importstatistikaustria');
-  }
-  catch (Exception $e) {
-    throw new API_Exception(/*errorMessage*/ 'Import failed: ' . $e->getMessage(), /*errorCode*/ 1);
+    $result = [
+      'count' => (int) CRM_Core_DAO::singleValueQuery("SELECT COUNT(*) FROM `civicrm_postcodeat`"),
+    ];
+
+    return civicrm_api3_create_success($result, $params, 'PostcodeAT', 'Importstatistikaustria');
+  } catch (Exception $e) {
+    throw new API_Exception('Import failed: ' . $e->getMessage(), 1);
   }
 }
