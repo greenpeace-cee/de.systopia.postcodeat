@@ -42,7 +42,6 @@ function civicrm_api3_postcode_a_t_get($params) {
     'ortnam',
     'stroffi',
     'zustort',
-    'return',
   );
 
   // Validate parameters
@@ -55,19 +54,28 @@ function civicrm_api3_postcode_a_t_get($params) {
         if (strlen($postcode) > 0) {
           $validatedParams['plznr'] = $postcode;
         }
+      } elseif ($key == 'return') {
+        $return_columns = explode(',', str_replace(' ', '', $value));
+
+        $validatedParams[$key] = array_filter(
+          $return_columns,
+          fn ($col) => in_array($col, $returnFields)
+        );
       } elseif (!empty($value)) {
         $validatedParams[$key] = $value;
       }
     }
   }
 
+  if (empty($validatedParams['return'])) {
+    $validatedParams['return'] = $returnFields;
+  }
+
   // Build the where clause of the postcode
-  $selectFields = '';
-  $where = "";
+  $conditions = ['1'];
   $values = array();
   $i = 1;
   foreach($validatedParams as $field => $value) {
-    if (!empty($selectFields)) { $selectFields .= ','; }
     switch ($field) {
       case 'plznr':
       case 'ortnam':
@@ -77,10 +85,10 @@ function civicrm_api3_postcode_a_t_get($params) {
         if (!empty($params['strict_fields_searching'])
           && is_array($params['strict_fields_searching'])
           && in_array($field, $params['strict_fields_searching'])) {
-          $where .= " AND `" . $field . "` = %" . $i;
+          $conditions[] = "`$field` = %$i";
           $values[$i] = array($value, 'String');
         } else {
-          $where .= " AND `" . $field . "` LIKE %" . $i;
+          $conditions[] = "`$field` LIKE %$i";
           $values[$i] = array($value . '%', 'String');
         }
         break;
@@ -88,19 +96,22 @@ function civicrm_api3_postcode_a_t_get($params) {
     $i++;
   }
 
-  $selectFields = $validatedParams['return'];
-  $sql = "SELECT DISTINCT {$selectFields} FROM `civicrm_postcodeat` WHERE 1 {$where}";
+  $selectFields = implode(', ', $validatedParams['return']);
+  $whereClause = implode(' AND ', $conditions);
+  $sql = "SELECT DISTINCT $selectFields FROM `civicrm_postcodeat` WHERE $whereClause";
+
   // For ortnam (City) we select gemnam38 (Politische Gemeinde) as well
   if ($selectFields == 'ortnam') {
-    $sql.= " UNION SELECT gemnam38 FROM `civicrm_postcodeat` WHERE 1 {$where}";
+    $sql.= " UNION SELECT gemnam38 FROM `civicrm_postcodeat` WHERE $whereClause";
   }
   $sql .= " LIMIT 0, 100";
   $dao = CRM_Core_DAO::executeQuery($sql, $values);
 
   $returnValues = array();
+  $mode = $params['mode'] ?? NULL;
   while($dao->fetch()) {
     $row = array();
-    if ($params['mode'] == 0) {
+    if ($mode == 0) {
       // Order as array 0 => plznr, ortnam, stroffi etc.
       foreach ($returnFields as $field) {
         if (isset($dao->$field)) {
