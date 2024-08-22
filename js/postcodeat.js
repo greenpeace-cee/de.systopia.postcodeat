@@ -49,27 +49,38 @@ function postcodeat_setstateprovince(blockId, postcode) {
 }
 
 function postcodeat_autofill(blockId, currentField) {
-    var postcode_field = cj('#address_'+blockId+'_postal_code');
-    var city_field = cj('#address_'+blockId+'_city');
-    var street_field = cj('#address_'+blockId+'_street_address');
+    const postcodeField = cj(`#address_${blockId}_postal_code`);
+    const cityField = cj(`#address_${blockId}_city`);
+    const streetField = cj(`#address_${blockId}_street_address`);
 
-    cj.ajax( {
-        url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
-        dataType: "json",
-        data: {
-            mode: 1,
-            plznr: postcode_field.val(),
-            ortnam: city_field.val(),
-            stroffi: street_field.val(),
-        },
-        success: function( data ) {
-            var plznr = data[0].plznr;
-            var ortnam = data[0].ortnam;
-            var stroffi = data[0].stroffi;
+    const [postcode, city, street] = [postcodeField, cityField, streetField].map(f => f.val());
 
-            if (currentField != 0) postcode_field.val(plznr);
-            if (currentField != 1) city_field.val(ortnam);
-            if (currentField != 2) street_field.val(stroffi);
+    postcodeat_find_address_matches({
+        select: ["plznr", "gemnam38", "ortnam", "zustort", "stroffi"],
+        where: { postcode, city, street },
+    }).then((results) => {
+        if (results.length < 1) return;
+
+        const uniquePostcodes = new Set();
+        const uniqueCities = new Set();
+        const uniqueStreets = new Set();
+
+        for (const { plznr, gemnam38, ortnam, zustort, stroffi } of results) {
+            uniquePostcodes.add(plznr);
+            uniqueCities.add(gemnam38).add(ortnam).add(zustort);
+            uniqueStreets.add(stroffi);
+        }
+
+        if (currentField !== 0 && uniquePostcodes.size === 1) {
+            postcodeField.val(Array.from(uniquePostcodes).at(0));
+        }
+
+        if (currentField !== 1 && uniqueCities.size === 1) {
+            cityField.val(Array.from(uniqueCities).at(0));
+        }
+
+        if (currentField !== 2 && uniqueStreets.size === 1) {
+            streetField.val(Array.from(uniqueStreets).at(0));
         }
     });
 }
@@ -132,6 +143,29 @@ function postcodeat_init_addressBlock(blockId, address_table_id) {
     });
 
     cj('#address_' + blockId + '_country_id').trigger('change');
+}
+
+function postcodeat_find_address_matches({ select, where }) {
+    if (Object.values(where).every(str => str.length < 1)) {
+        return Promise.resolve([]);
+    }
+
+    const { postcode, city, street } = where;
+
+    return CRM.api4("PostcodeAT", "get", {
+        select,
+        where: [
+            ["plznr", "LIKE", `${postcode}%`],
+            ["OR", [
+                ["gemnam38", "LIKE", `%${city}%`],
+                ["ortnam",   "LIKE", `%${city}%`],
+                ["zustort",  "LIKE", `%${city}%`],
+            ]],
+            ["stroffi", "LIKE", `%${street}%`],
+        ],
+        groupBy: select,
+        limit: 100,
+    });
 }
 
 cj(function() {

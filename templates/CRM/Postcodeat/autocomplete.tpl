@@ -50,21 +50,16 @@
 
             if ((cj('#address_' + blockId + '_country_id').val()) == 1014) {
               postcode_field.autocomplete({
-                  source: function( request, response ) {
-                      cj.ajax( {
-                          url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
-                          dataType: "json",
-                          data: {
-                              mode: 0,
-                              term : request.term,
-                              plznr: cj('#address_'+blockId+'_postal_code').val(),
-                              ortnam: cj('#address_'+blockId+'_city').val(),
-                              stroffi: cj('#address_'+blockId+'_street_address').val(),
-                              return: 'plznr'
+                  source: (request, response) => {
+                      postcodeat_find_address_matches({
+                          select: ["plznr"],
+                          where: {
+                              postcode: request.term || postcode_field.val(),
+                              city: city_field.val(),
+                              street: street_field.val(),
                           },
-                          success: function( data ) {
-                              response( data );
-                          }
+                      }).then((results) => {
+                          response(results.map(result => result.plznr).sort());
                       });
                   },
                   width: 280,
@@ -77,21 +72,22 @@
                   });
 
               city_field.autocomplete({
-                  source: function( request, response ) {
-                      cj.ajax( {
-                          url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
-                          dataType: "json",
-                          data: {
-                              mode: 0,
-                              term : request.term,
-                              plznr: cj('#address_'+blockId+'_postal_code').val(),
-                              ortnam: cj('#address_'+blockId+'_city').val(),
-                              stroffi: cj('#address_'+blockId+'_street_address').val(),
-                              return: 'ortnam'
-                          },
-                          success: function( data ) {
-                              response( data );
+                  source: (request, response) => {
+                      postcodeat_find_address_matches({
+                          select: ["gemnam38", "ortnam", "zustort"],
+                          where: {
+                              postcode: postcode_field.val(),
+                              city: request.term || city_field.val(),
+                              street: street_field.val(),
                           }
+                      }).then((results) => {
+                          const uniqueCityNames = new Set();
+
+                          for (const { gemnam38, ortnam, zustort } of results) {
+                              uniqueCityNames.add(gemnam38).add(ortnam).add(zustort);
+                          }
+
+                          response(Array.from(uniqueCityNames).sort());
                       });
                   },
                   width: 280,
@@ -104,21 +100,16 @@
                   });
 
               street_field.autocomplete({
-                  source: function( request, response ) {
-                      cj.ajax( {
-                          url: CRM.url('civicrm/ajax/postcodeat/autocomplete'),
-                          dataType: "json",
-                          data: {
-                              mode: 0,
-                              term : request.term,
-                              plznr: cj('#address_'+blockId+'_postal_code').val(),
-                              ortnam: cj('#address_'+blockId+'_city').val(),
-                              stroffi: cj('#address_'+blockId+'_street_address').val(),
-                              return: 'stroffi'
+                  source: (request, response) => {
+                      postcodeat_find_address_matches({
+                          select: ["stroffi"],
+                          where: {
+                              postcode: postcode_field.val(),
+                              city: city_field.val(),
+                              street: request.term || street_field.val(),
                           },
-                          success: function( data ) {
-                              response( data );
-                          }
+                      }).then((results) => {
+                          response(results.map(result => result.stroffi).sort());
                       });
                   },
                   width: 280,

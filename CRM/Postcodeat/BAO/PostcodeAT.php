@@ -104,7 +104,7 @@ class CRM_Postcodeat_BAO_PostcodeAT extends CRM_Postcodeat_DAO_PostcodeAT {
       throw new CRM_Core_Exception("Unable to download zipfile: $zip_file");
     }
 
-    $zip = new ZipArchive();
+    static $zip = new ZipArchive();
 
     if (!$zip->open($temp_file)) {
       throw new CRM_Core_Exception("Unable to open zipfile: $zip_file");
