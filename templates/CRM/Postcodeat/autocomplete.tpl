@@ -81,13 +81,25 @@
                               street: street_field.val(),
                           }
                       }).then((results) => {
+                          const uniqueDeliveryAddresses = new Set();
                           const uniqueCityNames = new Set();
 
                           for (const { gemnam38, ortnam, zustort } of results) {
-                              uniqueCityNames.add(gemnam38).add(ortnam).add(zustort);
+                              uniqueDeliveryAddresses.add(zustort);
+                              uniqueCityNames.add(gemnam38).add(ortnam);
                           }
 
-                          response(Array.from(uniqueCityNames).sort());
+                          const options_1 =
+                              Array.from(uniqueDeliveryAddresses)
+                              .sort()
+                              .map(value => ({ value, label: `${value} *` }));
+
+                          const options_2 =
+                              Array.from(uniqueCityNames.difference(uniqueDeliveryAddresses))
+                              .sort()
+                              .map(value => ({ value, label: value }));
+
+                          response(options_1.concat(options_2));
                       });
                   },
                   width: 280,
