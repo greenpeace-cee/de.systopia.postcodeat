@@ -52,9 +52,7 @@ class CRM_Postcodeat_BAO_PostcodeAT extends CRM_Postcodeat_DAO_PostcodeAT {
     CRM_Core_DAO::executeQuery("TRUNCATE `civicrm_statistikaustria_import`");
 
     // Parse XML file
-    $fp = self::getStreamToXML($zip_file, $xml_file);
-    $xml = simplexml_load_string(stream_get_contents($fp));
-    fclose($fp);
+    $xml = simplexml_load_string(self::getStreamToXML($zip_file, $xml_file));
 
     $columns = [
       'gemnr',
@@ -90,12 +88,13 @@ class CRM_Postcodeat_BAO_PostcodeAT extends CRM_Postcodeat_DAO_PostcodeAT {
   }
 
   /**
-   * Returns the filepointer to the first file in the zip archive
+   * Returns the file content of the first file
    *
    * @param string $zip_file
    * @param string $xml_file
+   *
+   * @return bool|string
    * @throws CRM_Core_Exception
-   * @return bool|int
    */
   private static function getStreamToXML($zip_file, $xml_file) {
     $temp_file = tempnam(sys_get_temp_dir(), 'statistikaustria');
@@ -117,7 +116,7 @@ class CRM_Postcodeat_BAO_PostcodeAT extends CRM_Postcodeat_DAO_PostcodeAT {
       throw new CRM_Core_Exception("Unable to retrieve XML ($xml_file) from zipfile: $zip_file");
     }
 
-    return $fp;
+    return stream_get_contents($fp);
   }
 
 }
