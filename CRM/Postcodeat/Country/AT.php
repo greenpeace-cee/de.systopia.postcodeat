@@ -3,9 +3,9 @@
 class CRM_Postcodeat_Country_AT {
 
   static function whereClause($params) {
-    $plznr = $params['plznr'];
-    $ortnam = $params['ortnam'];
-    $stroffi = $params['stroffi'];
+    $plznr = CRM_Utils_Type::escape($params['plznr'], 'String');
+    $ortnam = CRM_Utils_Type::escape($params['ortnam'], 'String');
+    $stroffi = CRM_Utils_Type::escape($params['stroffi'], 'String');
 
     $where = array();
     if (!empty($plznr)) {
@@ -15,7 +15,7 @@ class CRM_Postcodeat_Country_AT {
       $where[] = "plznr LIKE '{$sub_plz}_'";
     }
     if (!empty($ortnam)) {
-      $where[] = "ortnam LIKE '{$ortnam}%'";
+      $where[] = "(ortnam LIKE '{$ortnam}%' OR zustort LIKE '{$ortnam}%')";
     }
     if (!empty($stroffi)) {
       $where[] = "stroffi LIKE '{$stroffi}%'";
